@@ -20,9 +20,9 @@ def server():
             full_msg += part.decode('utf8')
             if len(part) < buffer_length:
                 message_complete = True
-                print(full_msg)
-                conn.sendall(full_msg.encode('utf8'))
-                conn.close()
+        print(full_msg)
+        conn.sendall(full_msg.encode('utf8'))
+        conn.close()
 
 if __name__ == '__main__':
     server()

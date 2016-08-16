@@ -9,6 +9,7 @@ def client_send(msg):
     client = socket.socket(*stream_info[:3])
     client.connect(stream_info[-1])
     client.sendall(msg.encode('utf8'))
+    client.shutdown(1)
     buffer_length = 8
     reply_complete = False
     full_msg = ""
@@ -17,7 +18,8 @@ def client_send(msg):
         full_msg += part.decode('utf8')
         if len(part) < buffer_length:
             reply_complete = True
-    client.close
+            break
+    client.close()
     return full_msg
 
 if __name__ == '__main__':
