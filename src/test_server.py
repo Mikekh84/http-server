@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 
-import pytest
 
-MSG_TABLE = [
+def test_response_ok_parts():
+    """Test response for three parts."""
+    from server import response_ok
+    resp_msg = response_ok()
+    assert resp_msg.split(" ") == 3
 
 
-]
-
-@pytest.mark.parametrize('msg, result', MSG_TABLE)
-def test_send_msg(msg)
+def test_response_ok_bytes():
+    """Test response is bytes."""
+    from server import response_ok
+    resp_msg = response_ok()
+    assert isinstance(resp_msg, (str, bytes))

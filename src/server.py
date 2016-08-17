@@ -1,6 +1,16 @@
 import socket
 
 
+def response_ok():
+    """Returns a well formed HTTP "200 OK" response."""
+
+
+
+def response_error():
+    """Returns a well formed HTTP "500 Internal Server Error" response."""
+
+
+
 def server():
     """Create a running echo server."""
     while True:
