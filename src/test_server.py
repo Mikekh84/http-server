@@ -13,7 +13,7 @@ def test_response_ok_bytes():
     """Test response is bytes."""
     from server import response_ok
     resp_msg = response_ok()
-    assert type(resp_msg) == type(b" ")
+    assert isinstance(resp_msg, bytes)
 
 
 def test_response_ok_part1():

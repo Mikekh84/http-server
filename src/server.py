@@ -3,21 +3,21 @@ import socket
 
 def response_ok():
     """Return a well formed HTTP "200 OK" response."""
-    return b"HTTP/1.1 200 OK"
+    return b"HTTP/1.1 200 OK\r\n"
 
 
 def response_error():
     """Return a well formed HTTP "500 Internal Server Error" response."""
-    return b"HTTP/1.1 500 Internal-Server-Error\r\n\r\n"
+    return b"HTTP/1.1 500 Internal-Server-Error\r\n"
 
 
 def server():
     """Create a running echo server."""
-    server = socket.socket(socket.AF_INET,
-                        socket.SOCK_STREAM,
-                        socket.IPPROTO_TCP
-                        )
-    address = ('127.0.0.1', 5000)
+    server = socket.socket(
+        socket.AF_INET,
+        socket.SOCK_STREAM,
+        socket.IPPROTO_TCP)
+    address = ('127.0.0.1', 5002)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.bind(address)
     server.listen(1)
