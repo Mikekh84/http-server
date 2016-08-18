@@ -1,11 +1,24 @@
 # -*- coding: utf-8 -*-
 import pytest
+from http.client import HTTPException
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture()
 def request_good():
     """Return good request."""
     return b'GET / HTTP/1.1'
+
+
+@pytest.fixture()
+def request_bad_method():
+    """Return bad method request."""
+    return b'POST / HTTP/1.1'
+
+
+@pytest.fixture()
+def request_bad_proto():
+    """Return bad proto."""
+    return b'GET / HTTP/1.0'
 
 
 def test_response_ok_parts():
@@ -85,7 +98,21 @@ def test_response_error_part3():
     assert split[2] == b"Internal-Server-Error"
 
 
-def test_parse_request_good():
+def test_parse_request_good(request_good):
     """Test that parse returns a good URI."""
     from server import parse_request
     assert parse_request(request_good) == b"/"
+
+
+def test_parse_request_bad_method(request_bad_method):
+    """Test parse raises proper method exception."""
+    from server import parse_request
+    with pytest.raises(HTTPException):
+        parse_request(request_bad_method)
+
+
+def test_parse_request_bad_proto(request_bad_proto):
+    """Test parse raises proper proto exception."""
+    from server import parse_request
+    with pytest.raises(HTTPException):
+        parse_request(request_bad_proto)

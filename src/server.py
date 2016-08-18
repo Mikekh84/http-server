@@ -1,8 +1,16 @@
 import socket
+from http.client import HTTPException
 
 
 def parse_request(request):
-    """Parse request and if valid return URI"""
+    """Parse request and if valid return URI."""
+    first_line = request.split()
+    method = first_line[0]
+    proto = first_line[2]
+    if not method == b'GET':
+        raise HTTPException('405 Method not allowed.')
+    if not proto == b'HTTP/1.1':
+        raise HTTPException('505 Version not supported.')
     return b'/'
 
 
