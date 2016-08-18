@@ -1,6 +1,11 @@
 import socket
 
 
+def parse_request(request):
+    """Parse request and if valid return URI"""
+    return b'/'
+
+
 def response_ok():
     """Return a well formed HTTP "200 OK" response."""
     return b"HTTP/1.1 200 OK\r\n"

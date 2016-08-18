@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+import pytest
+
+
+@pytest.fixture(scope='module')
+def request_good():
+    """Return good request."""
+    return b'GET / HTTP/1.1'
 
 
 def test_response_ok_parts():
@@ -76,3 +83,9 @@ def test_response_error_part3():
     resp_msg = response_error()
     split = resp_msg.split()
     assert split[2] == b"Internal-Server-Error"
+
+
+def test_parse_request_good():
+    """Test that parse returns a good URI."""
+    from server import parse_request
+    assert parse_request(request_good) == b"/"
