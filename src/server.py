@@ -1,38 +1,46 @@
 import socket
-try:
-    from http.client import HTTPException
-except ImportError:
-    from httplib import HTTPException
+
+
+class HTTPErrors(BaseException):
+    def __init__(self, message):
+        """Create an instance of HTTPErrors."""
+        self.message = message
+
+
+
 
 
 def parse_request(request):
     """Parse request and if valid return URI."""
-    split_req = request.split(b'\r\n', 1)
+    split_req = request.split('\r\n', 1)
     method, uri, proto = split_req[0].split()
-    headers = split_req[1].split(b'\r\n\r\n')
-    split_headers = headers[0].split(b'\r\n')
-    header_details = [items.split(b':', 1) for items in split_headers]
+    headers = split_req[1].split('\r\n\r\n')
+    split_headers = headers[0].split('\r\n')
+    header_details = [items.split(':', 1) for items in split_headers]
     header_dict = {k: v for k, v in header_details}
     if b'HOST' not in header_dict:
-            raise HTTPException('No HOST In Header')
+            raise HTTPErrors('No HOST In Header')
     if not method == b'GET':
-        raise HTTPException('405 Method not allowed.')
+        raise HTTPErrors('405 Method not allowed.')
     if not proto == b'HTTP/1.1':
-        raise HTTPException('505 Version not supported.')
+        raise HTTPErrors('505 Version not supported.')
     return uri
 
 
 def response_ok(*args):
     """Return a well formed HTTP "200 OK" response."""
     if args:
-        return args
+        return args[0].encode('utf8')
     else:
         return b"HTTP/1.1 200 OK\r\n\r\nRequest Valid"
 
 
-def response_error():
+def response_error(*args):
     """Return a well formed HTTP "500 Internal Server Error" response."""
-    return b"HTTP/1.1 500 Internal-Server-Error\r\n"
+    if args:
+        return args
+    else:
+        return b"HTTP/1.1 500 Internal-Server-Error\r\n"
 
 
 def server():
@@ -56,8 +64,13 @@ def server():
             if len(part) < buffer_length:
                 message_complete = True
         print(request)
-
-        conn.sendall(response_ok())
+        try:
+            parse_request(request)
+        except HTTPErrors:
+            response = response_error(HTTPErrors.message)
+        else:
+            response = response_ok(request)
+        conn.sendall(response)
         conn.close()
 
 if __name__ == '__main__':
