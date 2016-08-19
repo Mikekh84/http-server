@@ -6,19 +6,25 @@ from http.client import HTTPException
 @pytest.fixture()
 def request_good():
     """Return good request."""
-    return b'GET / HTTP/1.1'
+    return b'GET / HTTP/1.1\r\nHOST: https://something\r\n\r\n '
 
 
 @pytest.fixture()
 def request_bad_method():
     """Return bad method request."""
-    return b'POST / HTTP/1.1'
+    return b'POST / HTTP/1.1\r\nHOST: https://something\r\n\r\n '
 
 
 @pytest.fixture()
 def request_bad_proto():
     """Return bad proto."""
-    return b'GET / HTTP/1.0'
+    return b'GET / HTTP/1.0\r\nHOST: https://something\r\n\r\n '
+
+
+@pytest.fixture()
+def request_bad_host():
+    """Return invalid host."""
+    return b'GET / HTTP/1.0\r\nDATE: 10:59\r\n\r\n'
 
 
 def test_response_ok_parts():
@@ -116,3 +122,14 @@ def test_parse_request_bad_proto(request_bad_proto):
     from server import parse_request
     with pytest.raises(HTTPException):
         parse_request(request_bad_proto)
+
+
+def test_parse_request_good_host(request_good):
+    """Test parse has host."""
+    from server import parse_request
+    assert parse_request(request_good) == b'/'
+
+def test_parse_request_no_bost(request_bad_host):
+    from server import parse_request
+    with pytest.raises(HTTPException):
+        parse_request(request_bad_host)

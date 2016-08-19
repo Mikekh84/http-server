@@ -1,12 +1,20 @@
 import socket
-from http.client import HTTPException
+try:
+    from http.client import HTTPException
+except ImportError:
+    from httplib import HTTPException
 
 
 def parse_request(request):
     """Parse request and if valid return URI."""
-    first_line = request.split()
-
-    method, uri, proto = first_line[:3]
+    split_req = request.split(b'\r\n', maxsplit=1)
+    method, uri, proto = split_req[0].split()
+    headers = split_req[1].split(b'\r\n\r\n')
+    split_headers = headers[0].split(b'\r\n')
+    header_details = [items.split(b':', maxsplit=1) for items in split_headers]
+    header_dict = {k: v for k, v in header_details}
+    if b'HOST' not in header_dict:
+            raise HTTPException('No HOST In Header')
     if not method == b'GET':
         raise HTTPException('405 Method not allowed.')
     if not proto == b'HTTP/1.1':
