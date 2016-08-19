@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import pytest
-from http.client import HTTPException
+try:
+    from http.client import HTTPException
+except ImportError:
+    from httplib import HTTPException
 
 
 @pytest.fixture()
