@@ -34,8 +34,10 @@ def test_response_ok_parts():
     """Test response for three parts."""
     from server import response_ok
     resp_msg = response_ok()
-    split = resp_msg.split()
-    assert len(split) == 3
+    split = resp_msg.split(b'\r\n\r\n')
+    first = split[0].split(b'\r\n')
+    sections = first[0].split()
+    assert len(sections) == 3
 
 
 def test_response_ok_bytes():

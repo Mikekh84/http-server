@@ -22,9 +22,12 @@ def parse_request(request):
     return uri
 
 
-def response_ok():
+def response_ok(*args):
     """Return a well formed HTTP "200 OK" response."""
-    return b"HTTP/1.1 200 OK\r\n"
+    if args:
+        return args
+    else:
+        return b"HTTP/1.1 200 OK\r\n\r\nRequest Valid"
 
 
 def response_error():
@@ -46,14 +49,15 @@ def server():
         conn, addr = server.accept()
         buffer_length = 8
         message_complete = False
-        full_msg = ""
+        request = ""
         while not message_complete:
             part = conn.recv(buffer_length)
-            full_msg += part.decode('utf8')
+            request += part.decode('utf8')
             if len(part) < buffer_length:
                 message_complete = True
-        print(full_msg)
-        conn.send(response_ok())
+        print(request)
+
+        conn.sendall(response_ok())
         conn.close()
 
 if __name__ == '__main__':
