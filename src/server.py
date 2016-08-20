@@ -9,17 +9,17 @@ class HTTPErrors(Exception):
 
 def parse_request(request):
     """Parse request and if valid return URI."""
-    split_req = request.split(b'\r\n', 1)
+    split_req = request.split('\r\n', 1)
     method, uri, proto = split_req[0].split()
-    headers = split_req[1].split(b'\r\n\r\n')
-    split_headers = headers[0].split(b'\r\n')
-    header_details = [items.split(b':', 1) for items in split_headers]
-    header_dict = {k: v for k, v in header_details}
-    if b'HOST' not in header_dict:
+    headers = split_req[1].split('\r\n\r\n')
+    split_headers = headers[0].split('\r\n')
+    header_details = [items.split(':', 1) for items in split_headers]
+    header_dict = {k.upper(): v.strip() for k, v in header_details}
+    if 'HOST' not in header_dict:
         raise HTTPErrors('Invalid Host Stuff')
-    if not method == b'GET':
+    if not method == 'GET':
         raise HTTPErrors('405 Method not allowed.')
-    if not proto == b'HTTP/1.1':
+    if not proto == 'HTTP/1.1':
         raise HTTPErrors('505 Version not supported.')
     return uri
 
@@ -34,10 +34,10 @@ def response_ok(*args):
 
 def response_error(*args):
     """Return a well formed HTTP "500 Internal Server Error" response."""
-    if args:
-        return args[0].encode('utf8')
-    else:
-        return b"HTTP/1.1 500 Internal-Server-Error\r\n"
+    # if args:
+    #     return args[0].encode('utf8')
+    # else:
+    return b"HTTP/1.1 500 Internal-Server-Error\r\n"
 
 
 def server():
