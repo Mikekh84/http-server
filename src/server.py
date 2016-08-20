@@ -1,25 +1,22 @@
+from __future__ import unicode_literals
 import socket
 
 
-class HTTPErrors(BaseException):
+class HTTPErrors(Exception):
     def __init__(self, message):
-        """Create an instance of HTTPErrors."""
         self.message = message
-
-
-
 
 
 def parse_request(request):
     """Parse request and if valid return URI."""
-    split_req = request.split('\r\n', 1)
+    split_req = request.split(b'\r\n', 1)
     method, uri, proto = split_req[0].split()
-    headers = split_req[1].split('\r\n\r\n')
-    split_headers = headers[0].split('\r\n')
-    header_details = [items.split(':', 1) for items in split_headers]
+    headers = split_req[1].split(b'\r\n\r\n')
+    split_headers = headers[0].split(b'\r\n')
+    header_details = [items.split(b':', 1) for items in split_headers]
     header_dict = {k: v for k, v in header_details}
     if b'HOST' not in header_dict:
-            raise HTTPErrors('No HOST In Header')
+        raise HTTPErrors('Invalid Host Stuff')
     if not method == b'GET':
         raise HTTPErrors('405 Method not allowed.')
     if not proto == b'HTTP/1.1':
@@ -38,7 +35,7 @@ def response_ok(*args):
 def response_error(*args):
     """Return a well formed HTTP "500 Internal Server Error" response."""
     if args:
-        return args
+        return args[0].encode('utf8')
     else:
         return b"HTTP/1.1 500 Internal-Server-Error\r\n"
 
@@ -66,8 +63,8 @@ def server():
         print(request)
         try:
             parse_request(request)
-        except HTTPErrors:
-            response = response_error(HTTPErrors.message)
+        except HTTPErrors as e:
+            response = response_error(e.message)
         else:
             response = response_ok(request)
         conn.sendall(response)

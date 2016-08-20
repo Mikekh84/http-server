@@ -117,16 +117,17 @@ def test_parse_request_good(request_good):
 
 def test_parse_request_bad_method(request_bad_method):
     """Test parse raises proper method exception."""
-    from server import parse_request
-    with pytest.raises(HTTPException):
+    from server import parse_request, HTTPErrors
+    with pytest.raises(HTTPErrors) as e:
         parse_request(request_bad_method)
-
+    assert '405 Method not allowed.' in str(e)
 
 def test_parse_request_bad_proto(request_bad_proto):
     """Test parse raises proper proto exception."""
-    from server import parse_request
-    with pytest.raises(HTTPException):
+    from server import parse_request, HTTPErrors
+    with pytest.raises(HTTPErrors) as e:
         parse_request(request_bad_proto)
+    assert '505 Version not supported.'in str(e)
 
 
 def test_parse_request_good_host(request_good):
@@ -134,7 +135,9 @@ def test_parse_request_good_host(request_good):
     from server import parse_request
     assert parse_request(request_good) == b'/'
 
-def test_parse_request_no_bost(request_bad_host):
-    from server import parse_request
-    with pytest.raises(HTTPException):
+
+def test_parse_request_no_host(request_bad_host):
+    from server import parse_request, HTTPErrors
+    with pytest.raises(HTTPErrors) as e:
         parse_request(request_bad_host)
+    assert 'Invalid Host Stuff' in str(e)
