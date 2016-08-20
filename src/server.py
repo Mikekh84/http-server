@@ -3,7 +3,10 @@ import socket
 
 
 class HTTPErrors(Exception):
+    """HTTP Error exception class."""
+
     def __init__(self, message):
+        """Intialize Error with message."""
         self.message = message
 
 
@@ -16,7 +19,7 @@ def parse_request(request):
     header_details = [items.split(':', 1) for items in split_headers]
     header_dict = {k.upper(): v.strip() for k, v in header_details}
     if 'HOST' not in header_dict:
-        raise HTTPErrors('Invalid Host Stuff')
+        raise HTTPErrors('400 Host Header not found.')
     if not method == 'GET':
         raise HTTPErrors('405 Method not allowed.')
     if not proto == 'HTTP/1.1':
