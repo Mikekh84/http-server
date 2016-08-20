@@ -24,20 +24,16 @@ def parse_request(request):
     return uri
 
 
-def response_ok(*args):
+def response_ok(message):
     """Return a well formed HTTP "200 OK" response."""
-    if args:
-        return args[0].encode('utf8')
-    else:
-        return b"HTTP/1.1 200 OK\r\n\r\nRequest Valid"
+    response = "HTTP/1.1 200 OK\r\n\r\n{}".format(message)
+    return response.encode('utf8')
 
 
-def response_error(*args):
-    """Return a well formed HTTP "500 Internal Server Error" response."""
-    # if args:
-    #     return args[0].encode('utf8')
-    # else:
-    return b"HTTP/1.1 500 Internal-Server-Error\r\n"
+def response_error(message):
+    """Return a well formed HTTP  response."""
+    response = "HTTP 1/1 {}\r\n\r\n{}".format(message, message)
+    return response.encode('utf8')
 
 
 def server():
@@ -64,7 +60,7 @@ def server():
         try:
             parse_request(request)
         except HTTPErrors as e:
-            response = response_error(e.message)
+            response = response_error(e)
         else:
             response = response_ok(request)
         conn.sendall(response)
