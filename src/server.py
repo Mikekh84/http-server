@@ -11,11 +11,10 @@ class HTTPErrors(Exception):
         """Intialize Error with message."""
         self.message = message
 
-root = os.path.abspath("./") + '/webroot'
-
 
 def resolve_uri(uri):
     """Resolve uri and return body for response."""
+    root = os.path.abspath("./webroot")
     path = root + uri
     if os.path.isfile(path):
         file = io.open(path, 'rb')
@@ -23,7 +22,9 @@ def resolve_uri(uri):
         file.close()
         return content
     if os.path.isdir(path):
-        dir_list = ["<li>" + file + "</li>" for file in os.listdir(path)]
+        dir_list = [
+            "<li>" + file + "</li>" for file in os.listdir(path)
+        ]
         joined = "".join(dir_list).strip(',')
         return "<h1>{}</h1>{}".format(uri, joined)
     else:
