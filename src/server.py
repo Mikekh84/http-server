@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import socket
 
 
@@ -5,8 +7,8 @@ def server():
     """Create a running echo server."""
     while True:
         server = socket.socket(socket.AF_INET,
-                      socket.SOCK_STREAM,
-                      socket.IPPROTO_TCP)
+                               socket.SOCK_STREAM,
+                               socket.IPPROTO_TCP)
         address = ('127.0.0.1', 5000)
         server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         server.bind(address)
