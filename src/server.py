@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 import socket
 import os
 import io
-
+from email.utils import formatdate
 
 class HTTPErrors(Exception):
     """HTTP Error exception class."""
@@ -16,17 +16,26 @@ def resolve_uri(uri):
     """Resolve uri and return body for response."""
     root = os.path.abspath("./webroot")
     path = root + uri
+    content_type = u""
     if os.path.isfile(path):
         with io.open(path, 'rb') as file:
             content = file.read()
         file.close()
-        return content
+        if uri.endswith('txt'):
+            content_type = u"text"
+        elif uri.endswith('html'):
+            content_type = u"HTML"
+        elif uri.endswith(('png', 'jpg', 'jpeg')):
+            content_type = u"image"
+        return (content, content_type)
     if os.path.isdir(path):
         dir_list = [
             "<li>" + file + "</li>" for file in os.listdir(path)
         ]
         joined = "".join(dir_list).strip(',')
-        return "<h1>{}</h1>{}".format(uri, joined)
+        content_type = "directory"
+        content = "<!DOCTYPE html><h1>{}</h1>{}".format(uri, joined)
+        return content.encode('utf8'), content_type
     else:
         raise HTTPErrors('404 Not Found.')
 
@@ -48,10 +57,14 @@ def parse_request(request):
     return uri
 
 
-def response_ok(message):
+def response_ok(content, content_type):
     """Return a well formed HTTP "200 OK" response."""
-    response = "HTTP/1.1 200 OK\r\n\r\n"
-    return response.encode('utf8') + message
+    response = "HTTP/1.1 200 OK\r\nContent-Type:{}\r\nContent-Length:{}\r\nDate:{}\r\n\r\n".format(
+        content_type,
+        len(content),
+        formatdate(usegmt=True),
+    )
+    return response.encode('utf8') + content
 
 
 def response_error(message):
@@ -88,7 +101,7 @@ def server():
             except HTTPErrors as e:
                 response = response_error(e)
             else:
-                response = response_ok(resolved)
+                response = response_ok(resolved[0], resolved[1])
             conn.sendall(response)
             conn.close()
     except KeyboardInterrupt:
