@@ -42,6 +42,7 @@ def resolve_uri(uri):
 
 def parse_request(request):
     """Parse request and if valid return URI."""
+    # import pdb; pdb.set_trace()
     split_req = request.split('\r\n', 1)
     method, uri, proto = split_req[0].split()
     headers = split_req[1].split('\r\n\r\n', 1)

@@ -5,7 +5,7 @@ import io
 @pytest.fixture()
 def request_good():
     """Return good request."""
-    return 'GET / HTTP/1.1\r\nHOST: https://something\r\n\r\n '
+    return b'GET / HTTP/1.1\r\nHOST: https://something\r\n\r\n '
 
 
 @pytest.fixture()
@@ -38,7 +38,13 @@ def sample_file():
     file = io.open("webroot/sample.txt")
     content = file.read()
     file.close()
-    return content.encode('utf8')
+    return (content.encode('utf8'), 'text')
+
+
+@pytest.fixture()
+def parse_good():
+    """Request for parse."""
+    return 'GET / HTTP/1.1 \r\nHOST: something\r\n\r\n some text.'
 
 
 # @pytest.fixure()

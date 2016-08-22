@@ -5,7 +5,7 @@ import pytest
 def test_response_ok_parts(request_good):
     """Test response for three parts."""
     from server import response_ok
-    resp_msg = response_ok(request_good)
+    resp_msg = response_ok(request_good, b'something')
     split = resp_msg.split(b'\r\n\r\n')
     first = split[0].split(b'\r\n')
     sections = first[0].split()
@@ -15,14 +15,14 @@ def test_response_ok_parts(request_good):
 def test_response_ok_bytes(request_good):
     """Test response is bytes."""
     from server import response_ok
-    resp_msg = response_ok(request_good)
+    resp_msg = response_ok(request_good, b'something')
     assert isinstance(resp_msg, bytes)
 
 
 def test_response_ok_part1(request_good):
     """Test response for part 1, protocol."""
     from server import response_ok
-    resp_msg = response_ok(request_good)
+    resp_msg = response_ok(request_good, b'something')
     split = resp_msg.split()
     assert split[0] == b"HTTP/1.1"
 
@@ -30,7 +30,7 @@ def test_response_ok_part1(request_good):
 def test_response_ok_part2(request_good):
     """Test response for part 2, status code."""
     from server import response_ok
-    resp_msg = response_ok(request_good)
+    resp_msg = response_ok(request_good, b'something')
     split = resp_msg.split()
     assert split[1] == b"200"
 
@@ -38,7 +38,7 @@ def test_response_ok_part2(request_good):
 def test_response_ok_part3(request_good):
     """Test response for part 3, explanation."""
     from server import response_ok
-    resp_msg = response_ok(request_good)
+    resp_msg = response_ok(request_good, b'something')
     split = resp_msg.split()
     assert split[2] == b"OK"
 
@@ -50,10 +50,10 @@ def test_response_error_bytes(request_bad_proto):
     assert isinstance(resp_msg, bytes)
 
 
-def test_parse_request_good(request_good):
+def test_parse_request_good(parse_good):
     """Test that parse returns a good URI."""
     from server import parse_request
-    assert parse_request(request_good) == "/"
+    assert parse_request(parse_good) == "/"
 
 
 def test_parse_request_bad_method(request_bad_method):
@@ -72,10 +72,10 @@ def test_parse_request_bad_proto(request_bad_proto):
     assert '505 Version not supported.'in str(e)
 
 
-def test_parse_request_good_host(request_good):
+def test_parse_request_good_host(parse_good):
     """Test parse has host."""
     from server import parse_request
-    assert parse_request(request_good) == '/'
+    assert parse_request(parse_good) == '/'
 
 
 def test_parse_request_no_host(request_bad_host):
