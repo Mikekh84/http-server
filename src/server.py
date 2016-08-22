@@ -17,8 +17,8 @@ def resolve_uri(uri):
     root = os.path.abspath("./webroot")
     path = root + uri
     if os.path.isfile(path):
-        file = io.open(path, 'rb')
-        content = file.read()
+        with io.open(path, 'rb') as file:
+            content = file.read()
         file.close()
         return content
     if os.path.isdir(path):
@@ -50,8 +50,8 @@ def parse_request(request):
 
 def response_ok(message):
     """Return a well formed HTTP "200 OK" response."""
-    response = "HTTP/1.1 200 OK\r\n\r\n{}".format(message)
-    return response.encode('utf8')
+    response = "HTTP/1.1 200 OK\r\n\r\n"
+    return response.encode('utf8') + message
 
 
 def response_error(message):
