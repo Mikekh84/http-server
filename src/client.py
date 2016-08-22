@@ -12,7 +12,7 @@ def client(msg):
     client = socket.socket(*stream_info[:3])
     client.connect(stream_info[-1])
     client.sendall(msg.encode('utf8'))
-    client.shutdown(socket.SHUT_WR)s
+    client.shutdown(socket.SHUT_WR)
     buffer_length = 8
     reply_complete = False
     full_msg = b""
